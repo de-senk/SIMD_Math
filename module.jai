@@ -82,7 +82,7 @@ is_valid :: inline (a: Quaternion) -> bool {
     return true;
 }
 
-is_valid :: inline (a: $T/.[Vector2, Vector3,Vector4]) -> bool {
+is_valid :: inline (a: $T/.[Vector2, Vector3, Vector4]) -> bool {
     for a.component {
     is_nan, is_inf := is_nan_is_inf(it);
     if is_nan || is_inf return false;
@@ -90,6 +90,24 @@ is_valid :: inline (a: $T/.[Vector2, Vector3,Vector4]) -> bool {
     return true;
 }
 
+
+is_normalized :: (a: Quaternion, $tolerance:float = 0.000001) -> bool {
+    sum: float;
+    sum += a.w*a.w;
+    sum += a.x*a.x;
+    sum += a.y*a.y;
+    sum += a.z*a.z;
+
+    return sum < 1+tolerance && sum > 1-tolerance; //Already tested, its badn we should use 6 or less->should I use epsilon7? 7 digits are the limits of flaot precisions, but idk if the first 0. counts
+}
+
+is_normalized :: (a: $T / .[Vector3, Vector4], $tolerance:float = 0.000001) -> bool {
+    sum: float;
+    for a.component {
+        sum += it*it;
+    }
+    return sum < 1+tolerance && sum > 1-tolerance; //Already tested, its badn we should use 6 or less->should I use epsilon7? 7 digits are the limits of flaot precisions, but idk if the first 0. counts
+}
 //
 // SECTON: Matrix_RC
 //
