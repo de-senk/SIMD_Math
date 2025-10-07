@@ -3,10 +3,15 @@
 #import,file "./module.jai";
 main :: () {
     print_remembers();
-    rename_me_test_1();
-    rename_me_test_1(float64);
-    rename_me_test_1(int); //kinda useless right? who would use integers nowdays?
-    // rename_me_test_1(u32);  maybe for RGBA? I dont care, I would do a different module for RGBA math.
+    test_simd_arrays_operators();
+    test_simd_arrays_operators(float64);
+    test_simd_arrays_operators(int); //kinda useless right? who would use integers nowdays?
+    // test_simd_arrays_operators(u32);  maybe for RGBA? I dont care, I would do a different module for RGBA math.
+
+    test_matrix_rc_arrays_operators();
+    test_matrix_rc_arrays_operators(float64);
+    test_matrix_rc_arrays_operators(int);
+    // test_matrix_rc_arrays_operators(u32);
 }
 
 print_remembers :: () {
@@ -26,7 +31,45 @@ broadcast_for_tests_interleave :: (a: *$T/SIMD_Array, val: a.type, $step:= 1, $o
     }
 }
 
-rename_me_test_1 :: ($type: Type = float32) #no_abc {
+
+test_matrix_rc_arrays_operators :: ($type: Type = float32) #no_abc {
+    log("\n[TEST] type==%",type);
+    a: Matrix_RC(4,4,type);
+    b: Matrix_RC(4,4,type);
+
+
+    {
+    //set digonals
+    a.coef[0][0] = 1;
+    a.coef[1][1] = 2;
+    a.coef[2][2] = 3;
+    a.coef[3][3] = 4;
+    a_is_converging, bad_row := converges(a);
+    assert(a_is_converging, "doesnt converge->%", a);
+
+    //test non strict convergence
+    a.v[2][3] = 3;
+    a_is_converging, bad_row = converges(a);
+    assert(a_is_converging, "a bad row % converges->%",bad_row, a);
+    a.v[2][3] = 4;
+    a_is_converging, bad_row = converges(a);
+    assert(!a_is_converging, "a bad row % converges->%",bad_row, a);
+
+    //strict covnergence
+    a.v[2][3] = 3;
+    a_is_converging, bad_row = converges(a,strict=true);
+    assert(!a_is_converging, "doesnt strictly converge->%", a);
+    }
+
+    {
+    set_diagonals_broadcast(*a,0);
+    assert(diagonals_are_zero(a), "diagonals_are_zero: %",a);
+    set_diagonals_broadcast(*a,7);
+    assert(!diagonals_are_zero(a), "diagonals_are_zero: %",a);
+    }
+}
+
+test_simd_arrays_operators :: ($type: Type = float32) {
     log("\n[TEST] type==%",type);
     a: SIMD_Array(5, type);
     b: SIMD_Array(5, type);
