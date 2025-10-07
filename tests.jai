@@ -1,6 +1,6 @@
 #import "Basic";
 #import "SIMD";
-#import "Math";
+// #import "Math";
 #import,file "./module.jai";
 main :: () {
     print_remembers();
@@ -70,6 +70,17 @@ test_simd_arrays_operators :: ($type: Type = float32) {
     assert(is_valid(c));
     //more than 7 zeros
     Inf := cast(type)0h7FFFFFFF_FFFFFFFF;
+    /*
+    FLOAT32_MIN        :: 0h00800000;
+    FLOAT32_MAX        :: 0h7F7FFFFF;
+    FLOAT32_INFINITY   :: 0h7F800000;
+    FLOAT32_NAN        :: 0h7FBFFFFF;
+
+    FLOAT64_MIN        :: 0h00100000_00000000;
+    FLOAT64_MAX        :: 0h7FEFFFFF_FFFFFFFF;
+    FLOAT64_INFINITY   :: 0h7FF00000_00000000;
+    FLOAT64_NAN        :: 0h7FF7FFFF_FFFFFFFF;
+    */
     c[4] = c[4]/Inf;//+NaN;
     c[3] = -c[4]/Inf;//-NaN;
     c[2] = Inf/c[2];
@@ -161,6 +172,7 @@ test_matrix_rc_arrays_operators :: ($type: Type ) #no_abc {
     rhs :=  J * vels * -1 ;
     rhs[0] -= baumgarte[0];
     #assert(rhs.type == type);
+    log("\n[LCP_Gauss_Seidel]");
     lambdas := LCP_Gauss_Seidel(J_W_Jt, rhs, iterations = 1);
     log("iterations = 1 lamdbas %", lambdas);
     lambdas = LCP_Gauss_Seidel(J_W_Jt, rhs, iterations = 2);
@@ -171,5 +183,11 @@ test_matrix_rc_arrays_operators :: ($type: Type ) #no_abc {
     log("iterations = 4 lamdbas %", lambdas);
     lambdas = LCP_Gauss_Seidel(J_W_Jt, rhs, iterations = 8);
     log("iterations = 8 lamdbas %", lambdas);
+    lambdas = LCP_Gauss_Seidel(J_W_Jt, rhs, iterations = 16);
+    log("iterations = 16 lamdbas %", lambdas);
+    lambdas = LCP_Gauss_Seidel(J_W_Jt, rhs, iterations = 32);
+    log("iterations = 32 lamdbas %", lambdas);
+    lambdas = LCP_Gauss_Seidel(J_W_Jt, rhs, iterations = 64);
+    log("iterations = 64 lamdbas %", lambdas);
     }
 }
