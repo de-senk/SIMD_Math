@@ -101,7 +101,7 @@ is_normalized :: (a: Quaternion, $tolerance:float = 0.000001) -> bool {
     return sum < 1+tolerance && sum > 1-tolerance; //Already tested, its badn we should use 6 or less->should I use epsilon7? 7 digits are the limits of flaot precisions, but idk if the first 0. counts
 }
 
-is_normalized :: (a: $T / .[Vector3, Vector4], $tolerance:float = 0.000001) -> bool {
+is_normalized :: (a: $T / .[Vector2, Vector3, Vector4], $tolerance:float = 0.000001) -> bool {
     sum: float;
     for a.component {
         sum += it*it;
