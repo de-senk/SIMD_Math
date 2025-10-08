@@ -5,6 +5,10 @@
 #import "SIMD";
 #import "Basic";
 #scope_export
+
+//should this be exported?
+#load "epsilons.jai";
+
 //#no_aoc  === no_array_order_check, in SIMD if the order of float order in memory operations doesnt matter like in the dot product or addition, we can use the fac no_aoc
 //#no_abc  === no_array_bounds_check
 
