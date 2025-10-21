@@ -314,3 +314,51 @@ LCP_Gauss_Seidel :: (A: $T/Matrix_RC, b: T.Row_Type, $iterations: int = 1) -> T.
     }
     return result;
 }
+
+
+
+
+broadcast_for_tests :: (a: *$T/SIMD_Array, $val: a.type) {
+    insert_expansion :: ($count: int, val : $SIMD_type) -> string{
+          the_code :=#string JAI
+               a.*[%1] = %2;
+            JAI
+        sb: String_Builder;
+        for it_index: 0..count-1{
+            print_to_builder(*sb, the_code, it_index, val);
+        }
+        return builder_to_string(*sb);
+    }
+    #insert #run insert_expansion(a.count, val);
+    // for i: 0..a.count-1 {
+    //     a.*[i] = val;
+    // }
+}
+
+broadcast_for_tests_interleave :: (a: *$T/SIMD_Array, $val: a.type, $step:= 1, $offset:= 0) {
+    // for i: 0..a.count-1 {
+    //     if i % (step) != 0 then continue;
+    //     idx_to_use := i - offset;
+    //     if idx_to_use > a.count-1 then continue;
+    //     if idx_to_use < 0 then continue;
+    //     a.*[idx_to_use] = val;
+    // }
+
+    insert_expansion :: ($count: int, val : $SIMD_type) -> string{
+      the_code :=#string JAI
+           a.*[%1] = %2;
+        JAI
+    sb: String_Builder;
+    for i: 0..count-1{
+        if i % (step) != 0 then continue;
+        idx_to_use := i - offset;
+        if idx_to_use > a.count-1 then continue;
+        if idx_to_use < 0 then continue;
+        print_to_builder(*sb, the_code, idx_to_use, val);
+    }
+    return builder_to_string(*sb);
+}
+
+    #insert #run insert_expansion(a.count, val);
+
+}
