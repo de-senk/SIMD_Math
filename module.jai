@@ -1,4 +1,4 @@
-#module_parameters(SHOULD_HINT_LLVM_FOR_SIMD := true)(ENABLE_ASSERT := true);
+#module_parameters(SHOULD_HINT_LLVM_FOR_SIMD := true, SHOULD_IMPORT_STUFF_THAT_SHOUL_NOT_BE_IN_THIS_MODULE:=true)(ENABLE_ASSERT := true);
 
 #scope_file
 #import "Math";
@@ -6,6 +6,52 @@
 #import "Basic";
 #scope_export
 
+#if SHOULD_IMPORT_STUFF_THAT_SHOUL_NOT_BE_IN_THIS_MODULE {
+
+    Sign :: inline (x: float) -> float {
+        return ifx x < 0 then -1.0 else (ifx x > 0 then 1.0 else 0.0);
+    }
+    operator * :: (q: Quaternion, v:Vector3) -> Vector3 #symmetric
+    {
+        u := Vector3.{q.x, q.y, q.z};
+        s := q.w;
+
+        // Compute v' = 2 * dot(u, v) * u + (s^2 - dot(u, u)) * v + 2 * s * cross(u, v)
+        dot_u_v := dot(u, v);
+        dot_u_u := dot(u, u);
+        cross_u_v := cross(u, v);
+
+        result := 2.0 * dot_u_v * u + (s * s - dot_u_u) * v + 2.0 * s * cross_u_v;
+        return result;
+    }
+
+    operator * :: (m: Matrix4, v: Vector3) -> Vector3 {
+
+        result: Vector3 = ---;
+        tmp: Vector4 = ---;
+        tmp.xyz = v;
+        tmp.w = 1.0;
+
+        r4 := inline multiply(m, tmp);
+        result = r4.xyz;
+        return result;
+    }
+
+
+    make_quaternion_from_axis_and_angle :: (axiss: Vector3, theta: float) -> Quaternion {
+        using q: Quaternion = ---;
+        axis := unit_vector(axiss);
+
+        st := sin(theta * 0.5);
+        ct := cos(theta * 0.5);
+
+        x = axis.x * st;
+        y = axis.y * st;
+        z = axis.z * st;
+        w = ct;
+        return q;
+    }
+}
 //should this be exported?
 #load "epsilons.jai";
 
